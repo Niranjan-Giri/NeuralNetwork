@@ -1,9 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 
 class Tensor
 {
+    friend std::ostream& operator<<(std::ostream& os, const Tensor& t);
 public:
     Tensor(float data);
     Tensor(std::vector<float> data);
@@ -11,6 +15,15 @@ public:
 
     const float& Item() const;
     float& Item();
+
+    const float& operator()(std::size_t i) const;
+    float& operator()(std::size_t i);
+
+    const float& operator()(std::size_t i, std::size_t j) const;
+    float& operator()(std::size_t i, std::size_t j);
+
+    inline const std::vector<std::size_t>& GetShape() const { return m_Shape; }
+    inline const std::vector<std::size_t>& GetStride() const { return m_Stride; }
 
 private:
     //Any type of data will be stored in row major order
