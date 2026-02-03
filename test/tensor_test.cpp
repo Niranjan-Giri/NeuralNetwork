@@ -84,3 +84,20 @@ TEST(TensorTest, Addition)
     EXPECT_EQ((*t21)(1, 0), 6.0);
     EXPECT_EQ((*t21)(1, 1), 8.0);
 }
+
+TEST(TensorTest, Multiplication)
+{
+    std::shared_ptr<Tensor> t1 = std::make_shared<Tensor>(1.0);
+    std::shared_ptr<Tensor> t2 = std::make_shared<Tensor>(2.0);
+    EXPECT_THROW((*t1) * t2, std::invalid_argument);
+
+    std::shared_ptr<Tensor> t3 = std::make_shared<Tensor>(1.0);
+    std::shared_ptr<Tensor> t4 = std::make_shared<Tensor>(std::vector<float>({1.0, 2.0}));
+    EXPECT_THROW((*t3) * t4, std::invalid_argument);
+
+    //1d*1d
+    std::shared_ptr<Tensor> t5 = std::make_shared<Tensor>(std::vector<float>({1.0, 2.0}));
+    std::shared_ptr<Tensor> t6 = std::make_shared<Tensor>(std::vector<float>({1.0, 2.0}));
+    std::shared_ptr<Tensor> t7 = (*t5) * t6;
+    EXPECT_EQ(t7->Item(), 5.0);
+}

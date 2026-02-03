@@ -26,6 +26,9 @@ public:
     //Overloading + operator
     std::shared_ptr<Tensor> operator+(std::shared_ptr<Tensor> other);
 
+    //Overloading * operator
+    std::shared_ptr<Tensor> operator*(std::shared_ptr<Tensor> other);
+
     //Getters
     inline const std::vector<std::size_t>& GetShape() const { return m_Shape; }
     inline const std::vector<std::size_t>& GetStride() const { return m_Stride; }

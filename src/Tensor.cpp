@@ -283,3 +283,83 @@ std::shared_ptr<Tensor> Tensor::operator+(std::shared_ptr<Tensor> other)
         return std::make_shared<Tensor>(result);
     }
 }
+
+std::shared_ptr<Tensor> Tensor::operator*(std::shared_ptr<Tensor> other)
+{
+    if (m_Shape.size() == 0 || other->GetShape().size() == 0)
+    {
+        throw std::invalid_argument("Both arguments need to be at least 1d!");
+    }
+
+    if (m_Shape[m_Shape.size() - 1] != other->GetShape()[0])
+    {
+        throw std::invalid_argument("Row of first should match column of second!");
+    }
+
+    //1d*1d
+    if (m_Shape.size() == 1 && other->GetShape().size() == 1)
+    {
+        float result = 0;
+        for (std::size_t i = 0; i < m_Shape[0]; i++)
+        {
+            result += operator()(i) * (*other)(i);
+        }
+        return std::make_shared<Tensor>(result);
+    }
+
+    //2d*1d
+    if (m_Shape.size() == 2 && other->GetShape().size() == 1)
+    {
+        std::vector<float> result;
+        for (std::size_t i = 0; i < m_Shape[0]; i++)
+        {
+            float result_i = 0;
+            for (std::size_t j = 0; j < m_Shape[1]; j++)
+            {
+                result_i += operator()(i, j) * (*other)(j);
+            }
+            result.push_back(result_i);
+        }
+        return std::make_shared<Tensor>(result);
+    }
+    //1d*2d
+    else if (m_Shape.size() == 1 && other->GetShape().size() == 2)
+    {
+        std::vector<float> result;
+        for (std::size_t i = 0; i < other->GetShape()[1]; i++)
+        {
+            float result_i = 0;
+            for (std::size_t j = 0; j < other->GetShape()[0]; j++)
+            {
+                result_i += operator()(j) * (*other)(j, i);
+            }
+            result.push_back(result_i);
+        }
+        return std::make_shared<Tensor>(result);
+    }
+    //2d*2d
+    else
+    {
+        if (other->GetShape().size() < 2)
+        {
+            throw std::invalid_argument("Second tensor must also have 2 dimensions!");
+        }
+
+        std::vector<std::vector<float>> result;
+        for (std::size_t i = 0; i < m_Shape[0]; i++)
+        {
+            std::vector<float> result_i;
+            for (std::size_t j = 0; j < other->GetShape()[1]; j++)
+            {
+                float result_j;
+                for (std::size_t k = 0; k < m_Shape[1]; k++)
+                {
+                    result_j += operator()(i, k) * (*other)(k, j);
+                }
+                result_i.push_back(result_j);
+            }
+            result.push_back(result_i);
+        }
+        return std::make_shared<Tensor>(result);
+    }
+}
